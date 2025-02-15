@@ -21,6 +21,6 @@ class Command(BaseCommand):
             password = 'admin'
             user_email = f'{username}@{username}.{username[:2]}'
             User.objects.create_superuser(username, user_email, password)
-            print(f'Generated:\n username: {username} user_email: {user_email}, password: {password}')
+            print(f'Superuser Generated:\n username: {username} user_email: {user_email}, password: {password}')
         except Exception as exception:
             print(exception.__str__())
