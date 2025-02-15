@@ -13,6 +13,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, CreateModelMixin, UpdateModelMixin
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework.permissions import BasePermission
+from django.contrib.auth import authenticate, login, logout
 
 
 class IsSuperUser(BasePermission):
@@ -70,7 +71,57 @@ class RegisterViewSet(GenericViewSet):
         return Response(serializer.data)
 
 
-class LoginViewSet(GenericViewSet, TokenObtainPairView):
+class LogoutViewSet(GenericViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = RegisterSerializer
+
+    """
+    Retrieve a model instance.
+    """
+    def list(self, request, *args, **kwargs):
+        if request.user:
+            result = logout(request)
+            return Response(
+                {
+                    'message': 'Successful logout',
+                    'status': 'success'
+                }
+            )
+        return Response(
+            {
+                'message': 'No user detected to logout',
+                'status': 'fail'
+            }
+        )
+
+
+class LoginAuthViewSet(GenericViewSet, TokenObtainPairView):
+    permission_classes = (AllowAny,)
+    """
+    Login Authentication. Creates a logged-in session on the server, alternative to generating login token.
+    """
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+
+        try:
+            user = authenticate(username=request.data.get('username'), password=request.data.get('password'))
+            if user is not None:
+                res = login(request, user)
+                return Response(
+                    {'message': 'Successful auth and login'},
+                )
+            else:
+                return Response(
+                    {
+                        'message': 'invalid login credentials',
+                    }, 
+                )
+            pass
+        except Exception as err:
+            return err
+
+
+class LoginTokenViewSet(GenericViewSet, TokenObtainPairView):
     permission_classes = (AllowAny,)
     """
     Request a login token generation.
@@ -86,7 +137,7 @@ class LoginViewSet(GenericViewSet, TokenObtainPairView):
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
-class LoginRefreshViewSet(GenericViewSet,TokenRefreshView):
+class LoginTokenRefreshViewSet(GenericViewSet,TokenRefreshView):
     permission_classes = (AllowAny,)
     """
     Request a login token refresh.
