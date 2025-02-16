@@ -75,7 +75,7 @@ jobs:
           gh pr create --base testing --head development --title "Automated PR: Merge development into testing" --body "This PR is automatically created to merge changes from development into testing branch after successful tests."
 
   merging_pull_request_into_testing_branch:
-    needs: testing
+    needs: pull_request_for_testing_branch
     runs-on: ubuntu-latest
     if: success()
     steps:
