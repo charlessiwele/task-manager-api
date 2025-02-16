@@ -18,6 +18,6 @@ class Command(BaseCommand):
             password = 'generic'
             user_email = 'generic@generic.generic'
             generated_staff_user = generate_user(username, password, user_email)
-            print(f'Generic User Generated:\n username: {generated_staff_user.username} user_email: {generated_staff_user.user_email}, password: {generated_staff_user.password}')
+            print(f'Generic User Generated:\n username: {generated_staff_user.username} user_email: {generated_staff_user.email}, password: {generated_staff_user.password}')
         except Exception as exception:
             print(exception.__str__())

@@ -41,15 +41,11 @@ jobs:
         run: |
           cd ./task_manager && python manage.py collectstatic --noinput
 
-      - name: Run Django makemigrations
-        run: |
-          cd ./task_manager && python manage.py
-  
       - name: Generate Django migrations
         run: |
           cd ./task_manager && python manage.py makemigrations
 
-      - name: Django Run required migrations
+      - name: Run Django makemigrations    
         run: |
           cd ./task_manager && python manage.py migrate
   
