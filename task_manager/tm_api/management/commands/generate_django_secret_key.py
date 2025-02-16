@@ -1,6 +1,5 @@
 import logging
 from django.core.management import BaseCommand
-from tm_api.services.user_generator import generate_user
 import string
 import secrets
 
