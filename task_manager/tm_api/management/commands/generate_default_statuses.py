@@ -1,5 +1,5 @@
 import logging
-from tm_api.models import Status
+from tm_api.services.status_generator import generate_statuses
 from django.core.management import BaseCommand
 
 logger = logging.getLogger(__name__)
@@ -15,12 +15,7 @@ class Command(BaseCommand):
         try:
             print('Welcome to default statuses generator')
             statuses = ['PENDING', 'IN_PROGRESS', 'COMPLETED']
-            for status in statuses:
-                Status.objects.get_or_create(
-                    name=status,
-                    description=status
-                )
-                print(f'Status {status} generated')
+            generate_statuses(statuses)
             print(f'All default statuses generated!')
         except Exception as exception:
             print(exception.__str__())
