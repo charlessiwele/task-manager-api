@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta # import this library top of the settings.py file
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -98,7 +99,7 @@ WSGI_APPLICATION = 'task_manager.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 POSTGRES_DB = os.environ.get('POSTGRES_DB', default=None)
-
+POSTGRES_CONN_STRING = os.environ.get('POSTGRES_CONN_STRING', default=None)
 if POSTGRES_DB:
     DATABASES = {
         'default': {
@@ -110,6 +111,14 @@ if POSTGRES_DB:
             'PORT': os.environ.get('POSTGRES_PORT', default='5432'),
         }
     }
+elif POSTGRES_CONN_STRING:
+    DATABASES = {
+        'default': dj_database_url.config(
+            # Replace this value with your local database's connection string.
+            default=POSTGRES_CONN_STRING,
+            conn_max_age=600
+        )
+    }
 else:
     DATABASES = {
         'default': {
@@ -117,9 +126,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
-
-
 
 
 # Password validation
