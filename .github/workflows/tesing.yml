@@ -5,12 +5,12 @@ on:
     branches:
       - development
 
-# concurrency: 
-#     group: testing
-#     cancel-in-progress: true
+concurrency: 
+    group: testing
+    cancel-in-progress: true
 
 jobs:
-  test:
+  testing:
     runs-on: ubuntu-latest
     container: python:3.11-slim
 
@@ -62,15 +62,16 @@ jobs:
           cd ./task_manager && python manage.py test
 
   merge:
-    needs: test
+    needs: testing
     runs-on: ubuntu-latest
     if: success()
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@master
 
-      - name: Merge PR
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr merge --auto --squash "$GITHUB_REF"
+      - name: Merge development -> testing
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          from_branch: development
+          target_branch: testing
+          github_token: ${{ secrets.GITHUB_TOKEN }}
