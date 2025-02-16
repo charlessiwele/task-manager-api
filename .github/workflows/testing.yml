@@ -54,7 +54,6 @@ jobs:
           && python manage.py generate_default_statuses \
           && python manage.py generate_default_superuser \
           && python manage.py generate_default_generic_user \
-          && python manage.py test
 
       - name: Run Django tests
         run: |
