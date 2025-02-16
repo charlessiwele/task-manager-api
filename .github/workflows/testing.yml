@@ -18,7 +18,6 @@ jobs:
       db:
         image: postgres
     env:
-        # POSTGRES_DB: tm_db
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: admin
         DJANGO_DEBUG_MODE: true
@@ -61,7 +60,21 @@ jobs:
         run: |
           cd ./task_manager && python manage.py test
 
-  merge:
+  pull_request_for_testing_branch:
+    needs: testing
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request to merge into testing branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create --base testing --head development --title "Automated PR: Merge development into testing" --body "This PR is automatically created to merge changes from development into testing branch after successful tests."
+
+  merging_pull_request_into_testing_branch:
     needs: testing
     runs-on: ubuntu-latest
     if: success()
@@ -73,4 +86,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr merge --auto --squash "$GITHUB_REF"
+          gh pr merge --auto --squash "$(gh pr list --state open --base testing --head development --json number --jq '.[0].number')"
