@@ -1,12 +1,5 @@
-from django.contrib import admin
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from django.urls import path
 from tm_api.views import RegisterViewSet, TaskViewSet, StatusViewSet, LoginTokenViewSet, LoginAuthViewSet, LoginTokenRefreshViewSet, LogoutViewSet
-from rest_framework.schemas import get_schema_view
-from rest_framework.renderers import JSONOpenAPIRenderer
-from rest_framework.permissions import AllowAny
-from django.urls import get_resolver
-from rest_framework.routers import DefaultRouter, SimpleRouter
+from rest_framework.routers import DefaultRouter
 
 # router = SimpleRouter()
 router = DefaultRouter()
