@@ -1,0 +1,89 @@
+name: Run Django Tests and Merge
+
+on:
+  push:
+    branches:
+      - development
+
+concurrency: 
+    group: testing
+    cancel-in-progress: true
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+    container: python:3.11-slim
+
+    services:
+      db:
+        image: postgres
+    env:
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: admin
+        DJANGO_DEBUG_MODE: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install OS dependencies
+        run: |
+          apt-get update \
+          && apt-get -y install libpq-dev gcc
+
+      - name: Install app dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+  
+      - name: Run Django collectstatic
+        run: |
+          cd ./task_manager && python manage.py collectstatic --noinput
+
+      - name: Generate Django migrations
+        run: |
+          cd ./task_manager && python manage.py makemigrations
+
+      - name: Run Django makemigrations    
+        run: |
+          cd ./task_manager && python manage.py migrate
+  
+      - name: Generate default users and task statuses
+        run: |
+          cd ./task_manager && python manage.py generate_default_staff_user \
+          && python manage.py generate_default_statuses \
+          && python manage.py generate_default_superuser \
+          && python manage.py generate_default_generic_user \
+          && python manage.py test
+
+      - name: Run Django tests
+        run: |
+          cd ./task_manager && python manage.py test
+
+  create_pull_request_for_testing_branch:
+    needs: testing
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request to merge into testing branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create --base testing --head development --title "Merge development into testing" --body "This PR merges the latest changes from development into testing."
+
+  merging_pull_request_into_testing_branch:
+    needs: create_pull_request_for_testing_branch
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Merge PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge --auto --squash "$(gh pr list --state open --base testing --head development --json number --jq '.[0].number')"

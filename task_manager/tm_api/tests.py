@@ -170,7 +170,7 @@ class ProjectTests(TestCase):
         )
         self.assertEqual(before_log_in_create_task_result.status_code, status.HTTP_401_UNAUTHORIZED)
 
-        login_token_result = api_client.post(
+        login_token_result = before_log_in_create_task_result.client.post(
             '/login_token/', 
             {
                 'username': 'test_admin_username',
