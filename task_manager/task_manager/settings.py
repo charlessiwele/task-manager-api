@@ -26,7 +26,11 @@ SECRET_KEY = 'django-insecure-erbuuei=zt@6lj!^^1$u7901yxtjtne0g6m6(=05(im)o0%e%-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '0.0.0.0',
+    '127.0.0.1',
+    'localhost',
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -93,13 +97,29 @@ WSGI_APPLICATION = 'task_manager.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+POSTGRES_DB = os.environ.get('POSTGRES_DB', default=None)
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if POSTGRES_DB:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', default='postgres'),
+            'USER': os.environ.get('POSTGRES_USER', default='admin'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', default='admin'),
+            'HOST': os.environ.get('POSTGRES_HOST', default='172.18.0.1'),
+            'PORT': os.environ.get('POSTGRES_PORT', default='5432'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+
+
 
 
 # Password validation
