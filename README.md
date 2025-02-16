@@ -1,5 +1,6 @@
 # Project Setup
 
+# Project Progressive Notes
 ## Install virtualenv: 
 <code>
 sudo apt install python3-virtualenv
@@ -18,6 +19,15 @@ source .venv/bin/activate
 ## Install dependencies:
 <code>
 pip install django djangorestframework djangorestframework_simplejwt
+</code>
+
+## Freeze dependencies:
+<code>
+pip ## Install dependencies:
+<code>
+pip freeze > requirements.txt
+</code>
+
 </code>
 
 ## Create a django project:
@@ -88,3 +98,71 @@ python manage.py generatedefaultsuperuser
 python manage.py runserver
 </code>
 
+
+## To build the docker tm-app image:
+sudo docker build -t tm-app .
+
+## To run the docker tm-app container:
+sudo docker run --name tm-app-1 -p 8000:8000 tm-app
+
+## To stop the docker tm-app container:
+sudo docker stop tm-app-1
+
+## To remove the docker tm-app container before re-running:
+sudo docker rm tm-app-1
+
+## To rebuild & restart:
+sudo docker stop tm-app-1 && \
+sudo docker rm tm-app-1 && \
+sudo docker build -t tm-app . && \
+sudo docker run --name tm-app-1 -p 8000:8000 tm-app
+
+## To remove  docker network:
+sudo docker network rm tm-network
+
+## To create docker network:
+sudo docker network create -d bridge tm-network
+
+## Fetch PostgreSQL image
+sudo docker pull postgres
+
+## Starting the PostgreSQL Container
+sudo docker run --name tm-postgres-1 -e POSTGRES_PASSWORD=admin postgres
+
+## Starting the PostgreSQL Container on the Network "tm-network"
+sudo docker run --name tm-postgres-1 \
+-e POSTGRES_DB=tm_db \
+-e POSTGRES_USER=admin \
+-e POSTGRES_PASSWORD=admin \
+-d --network=tm-network postgres
+
+## Stop-Start PostgreSQL Container on the Network "tm-network"
+sudo docker stop tm-postgres-1 && \
+sudo docker rm tm-postgres-1 && \
+sudo docker run --name tm-postgres-1 \
+-e POSTGRES_DB=tm_db \
+-e POSTGRES_USER=admin \
+-e POSTGRES_PASSWORD=admin \
+-d --network=tm-network \
+-p 5432:5432 postgres
+
+## To rebuild & restart tm-app on the Network "tm-network":
+sudo docker stop tm-app-1 && \
+sudo docker rm tm-app-1 && \
+sudo docker build -t tm-app . && \
+sudo docker run --name tm-app-1 -p 8000:8000 --network=tm-network tm-app
+
+## Inspecting the Network "tm-network":
+docker network inspect tm-network
+
+
+## Default user credentials:
+# Admin:
+username: admin
+password: admin
+# Staff:
+username: staff
+password: staff
+# Genric:
+username: genric
+password: genric
