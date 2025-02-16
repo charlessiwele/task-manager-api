@@ -60,7 +60,7 @@ jobs:
         run: |
           cd ./task_manager && python manage.py test
 
-  pull_request_for_testing_branch:
+  create_pull_request_for_testing_branch:
     needs: testing
     runs-on: ubuntu-latest
     if: success()
@@ -72,10 +72,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr create --base testing --head development --title "Automated PR: Merge development into testing" --body "This PR is automatically created to merge changes from development into testing branch after successful tests."
+          gh pr create --base testing --head development --title "Merge development into testing" --body "This PR merges the latest changes from development into testing."
 
   merging_pull_request_into_testing_branch:
-    needs: pull_request_for_testing_branch
+    needs: create_pull_request_for_testing_branch
     runs-on: ubuntu-latest
     if: success()
     steps:
