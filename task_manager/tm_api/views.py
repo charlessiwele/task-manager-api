@@ -47,7 +47,10 @@ class RegisterViewSet(GenericViewSet):
         is_valid = serializer.is_valid(raise_exception=True)
         if is_valid:
             serializer.save()
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+            return Response(
+                serializer.validated_data, 
+                status=status.HTTP_200_OK
+            )
 
 
     """
@@ -68,7 +71,10 @@ class RegisterViewSet(GenericViewSet):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
 
 
 class LogoutViewSet(GenericViewSet):
@@ -85,13 +91,15 @@ class LogoutViewSet(GenericViewSet):
                 {
                     'message': 'Successful logout',
                     'status': 'success'
-                }
+                },
+                status=status.HTTP_200_OK
             )
         return Response(
             {
                 'message': 'No user detected to logout',
                 'status': 'fail'
-            }
+            },
+            status=status.HTTP_404_NOT_FOUND
         )
 
 
@@ -105,18 +113,22 @@ class LoginAuthViewSet(GenericViewSet, TokenObtainPairView):
 
         try:
             user = authenticate(username=request.data.get('username'), password=request.data.get('password'))
-            if user is not None:
-                res = login(request, user)
+            if user:
+                login(request, user)
                 return Response(
-                    {'message': 'Successful auth and login'},
+                    {
+                        'session':request.session,
+                        'message': 'Successful auth and login',
+                    },
+                    status=status.HTTP_200_OK
                 )
             else:
                 return Response(
                     {
                         'message': 'invalid login credentials',
-                    }, 
-                )
-            pass
+                    },
+                status=status.HTTP_401_UNAUTHORIZED
+            )
         except Exception as err:
             return err
 
@@ -166,7 +178,10 @@ class TaskViewSet(GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
 
     """
     List a queryset.
@@ -184,7 +199,10 @@ class TaskViewSet(GenericViewSet):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
 
     """
     Create a model instance.
@@ -210,7 +228,7 @@ class TaskViewSet(GenericViewSet):
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
 
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
     def get_permissions(self):
@@ -234,7 +252,7 @@ class StatusViewSet(GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     """
     List a queryset.
@@ -247,7 +265,7 @@ class StatusViewSet(GenericViewSet):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     """
     Create a model instance.
@@ -256,7 +274,7 @@ class StatusViewSet(GenericViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     """
     Update a model instance.
@@ -273,7 +291,7 @@ class StatusViewSet(GenericViewSet):
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
 
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get_permissions(self):
         if self.action == 'create' or  self.action == 'update':

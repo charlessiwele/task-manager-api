@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from tm_api.models import Task, Status
@@ -51,18 +52,18 @@ class TaskSerializer(serializers.ModelSerializer):
         title=self.data.get('title')
         description=self.data.get('description')
         due_date=self.data.get('due_date')
-        status=Status.objects.get(pk=self.data.get('status'))
+        status=Status.objects.get(pk=self.data.get('status')) if self.data.get('status') else None
         user=User.objects.get(pk=request.user.pk)
         try:
-            task = Task.objects.create(
-                title=title,
-                description=description,
-                due_date=due_date,
-                status=status,
-                user=user
-            )
-            return task
-    
+            with transaction.atomic():
+                task = Task.objects.create(
+                    title=title,
+                    description=description,
+                    due_date=due_date,
+                    status=status,
+                    user=user
+                )
+                return task
         except Exception as exception:
             return str(exception)
 
