@@ -1,16 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import TaskSerializer, StatusSerializer, RegisterSerializer
 from rest_framework import status
 from tm_api.models import Task, Status
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, CreateModelMixin, UpdateModelMixin
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework.permissions import BasePermission
 from django.contrib.auth import authenticate, login, logout
@@ -63,7 +59,7 @@ class RegisterViewSet(GenericViewSet):
             queryset = self.filter_queryset(self.get_queryset())
 
             if not request.user.is_superuser:
-                queryset = queryset.filter(user=request.user)
+                queryset = queryset.filter(id=request.user.pk)
 
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -232,10 +228,10 @@ class TaskViewSet(GenericViewSet):
 
 
     def get_permissions(self):
-        if self.action == 'list' or self.action == 'create':
-            self.permission_classes = [IsAuthenticated]
-        elif self.action == 'retrieve'or  self.action == 'update':
+        if self.action == 'retrieve'or  self.action == 'update':
             self.permission_classes = [IsTaskOwner, IsAdminUser] 
+        else:
+            self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
 
@@ -295,5 +291,7 @@ class StatusViewSet(GenericViewSet):
 
     def get_permissions(self):
         if self.action == 'create' or  self.action == 'update':
-            self.permission_classes = [IsAdminUser] 
+            self.permission_classes = [IsSuperUser] 
+        else:
+            self.permission_classes = [IsAuthenticated] 
         return super(self.__class__, self).get_permissions()
