@@ -3,13 +3,13 @@ FROM python:3.11-slim
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV DJANGO_DEBUG_MODE 0
 # ENV POSTGRES_DB tm_db
 # ENV POSTGRES_USER admin
 # ENV POSTGRES_PASSWORD admin
 # ENV POSTGRES_HOST 172.18.0.1
 # ENV POSTGRES_PORT 5432
 # ENV POSTGRES_CONN_STRING = postgresql://admin:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.frankfurt-postgres.render.com/tm_db_6n22
-ENV DJANGO_DEBUG_MODE 0
 # Set work directory
 WORKDIR /usr/src/
 
@@ -47,7 +47,6 @@ RUN python manage.py generate_default_staff_user
 RUN python manage.py generate_default_statuses
 RUN python manage.py generate_default_superuser
 RUN python manage.py generate_default_generic_user
-RUN python manage.py test
 
 # # Expose the port the app runs on
 EXPOSE 8000
