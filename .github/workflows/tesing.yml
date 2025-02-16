@@ -3,11 +3,11 @@ name: Run Django Tests and Merge
 on:
   push:
     branches:
-      - testing
+      - development
 
-concurrency: 
-    group: testing
-    cancel-in-progress: true
+# concurrency: 
+#     group: testing
+#     cancel-in-progress: true
 
 jobs:
   test:
