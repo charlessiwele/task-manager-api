@@ -18,12 +18,10 @@ source .venv/bin/activate
 
 ## Install dependencies:
 <code>
-pip install django djangorestframework djangorestframework_simplejwt
+pip install django djangorestframework djangorestframework_simplejwt psycopg2-binary dj-database-url
 </code>
 
 ## Freeze dependencies:
-<code>
-pip ## Install dependencies:
 <code>
 pip freeze > requirements.txt
 </code>
