@@ -38,7 +38,7 @@ jobs:
   
       - name: Run Django tests
         run: |
-          python manage.py test
+          cd /task_manager && python manage.py test
 
   merge:
     needs: test
