@@ -136,7 +136,7 @@ class LogoutAuthViewSet(GenericViewSet):
     def list(self, request, *args, **kwargs):
         try:
             if request.user:
-                result = logout(request)
+                logout(request)
                 return Response(
                     {
                         'message': 'Successful logout',
@@ -158,9 +158,8 @@ class LogoutAuthViewSet(GenericViewSet):
             )
 
 
-class LogoutTokenViewSet(GenericViewSet):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = RegisterSerializer
+class LogoutTokenViewSet(GenericViewSet, TokenRefreshView):
+    permission_classes = (AllowAny,)
 
     """
     Retrieve a model instance.
