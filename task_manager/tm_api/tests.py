@@ -5,7 +5,6 @@ from rest_framework.test import APIClient
 from tm_api.services.status_generator import generate_statuses
 from rest_framework import status
 from tm_api.models import Status
-from rest_framework_simplejwt.tokens import RefreshToken
 
 api_client = APIClient()
 
@@ -203,7 +202,6 @@ class ProjectTests(TestCase):
         self.assertEqual(refresh_result.data, "Token is blacklisted")
 
     def test_status(self):
-
         PENDING ='PENDING'
         IN_PROGRESS ='IN_PROGRESS'
         COMPLETED ='COMPLETED'
