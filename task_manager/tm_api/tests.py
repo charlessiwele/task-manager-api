@@ -1,4 +1,3 @@
-from django.db import transaction
 from django.test import TestCase
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
@@ -6,6 +5,7 @@ from rest_framework.test import APIClient
 from tm_api.services.status_generator import generate_statuses
 from rest_framework import status
 from tm_api.models import Status
+from rest_framework_simplejwt.tokens import RefreshToken
 
 api_client = APIClient()
 
@@ -124,39 +124,36 @@ class ProjectTests(TestCase):
         api_client = APIClient()
 
         login_auth_result = None
-        with transaction.atomic():
-            login_auth_result = api_client.post(
-                path="/login_auth/",
-                data={
-                    'username': 'test_admin_username',
-                    'password': 'test_admin_password',
-                }
-            )
-            self.assertEqual(login_auth_result.status_code, status.HTTP_200_OK)
+        login_auth_result = api_client.post(
+            path="/login_auth/",
+            data={
+                'username': 'test_admin_username',
+                'password': 'test_admin_password',
+            }
+        )
+        self.assertEqual(login_auth_result.status_code, status.HTTP_200_OK)
         logged_in_task_create_result = None
-        with transaction.atomic():
-            logged_in_task_create_result = login_auth_result.client.post(
-                '/tasks/', 
-                {
-                    'title': 'title1', 
-                    'description': 'description1', 
-                },
-            )
-            self.assertEqual(logged_in_task_create_result.status_code, status.HTTP_201_CREATED)
-            logout_result = logged_in_task_create_result.client.get(
-                path="/logout/",
-            )
-            self.assertEqual(logout_result.status_code, status.HTTP_200_OK)
+        logged_in_task_create_result = login_auth_result.client.post(
+            '/tasks/', 
+            {
+                'title': 'title1', 
+                'description': 'description1', 
+            },
+        )
+        self.assertEqual(logged_in_task_create_result.status_code, status.HTTP_201_CREATED)
+        logout_result = logged_in_task_create_result.client.get(
+            path="/logout_auth/",
+        )
+        self.assertEqual(logout_result.status_code, status.HTTP_200_OK)
         logged_out_create_task_result = None
-        with transaction.atomic():
-            logged_out_create_task_result = api_client.post(
-                '/tasks/', 
-                {
-                    'title': 'title1', 
-                    'description': 'description1', 
-                },
-            )
-            self.assertEqual(logged_out_create_task_result.status_code, status.HTTP_401_UNAUTHORIZED)
+        logged_out_create_task_result = api_client.post(
+            '/tasks/', 
+            {
+                'title': 'title1', 
+                'description': 'description1', 
+            },
+        )
+        self.assertEqual(logged_out_create_task_result.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_tasks(self):
         api_client = APIClient()
@@ -189,6 +186,21 @@ class ProjectTests(TestCase):
             }
         )
         self.assertEqual(after_log_in_create_task_result.status_code, status.HTTP_201_CREATED)
+
+        logout_token_result = after_log_in_create_task_result.client.post(
+            '/logout_token/', 
+            {
+                'refresh': login_token_result.data.get('refresh'),
+            }
+        )
+        refresh_result = logout_token_result.client.post(
+            '/refresh_login_token/', 
+            {
+                'refresh': login_token_result.data.get('refresh'),
+            }
+        )
+        self.assertEqual(refresh_result.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertEqual(refresh_result.data, "Token is blacklisted")
 
     def test_status(self):
 

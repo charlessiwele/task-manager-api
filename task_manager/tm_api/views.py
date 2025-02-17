@@ -7,7 +7,6 @@ from tm_api.models import Task, Status
 from django.contrib.auth.models import User
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework.permissions import BasePermission
 from django.contrib.auth import authenticate, login, logout
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -102,7 +101,7 @@ class LogoutAuthViewSet(GenericViewSet):
     def list(self, request, *args, **kwargs):
         try:
             if request.user:
-                result = logout(request)
+                logout(request)
                 return Response(
                     {
                         'message': 'Successful logout',
@@ -124,9 +123,8 @@ class LogoutAuthViewSet(GenericViewSet):
             )
 
 
-class LogoutTokenViewSet(GenericViewSet):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = RegisterSerializer
+class LogoutTokenViewSet(GenericViewSet, TokenRefreshView):
+    permission_classes = (AllowAny,)
 
     """
     Retrieve a model instance.
@@ -170,8 +168,6 @@ class LoginAuthViewSet(GenericViewSet, TokenObtainPairView):
     Login Authentication. Creates a logged-in session on the server, alternative to generating login token.
     """
     def create(self, request):
-        serializer = self.get_serializer(data=request.data)
-
         try:
             user = authenticate(username=request.data.get('username'), password=request.data.get('password'))
             if user:
@@ -325,7 +321,7 @@ class TaskViewSet(GenericViewSet):
 
     def get_permissions(self):
         if self.action == 'retrieve'or  self.action == 'update':
-            self.permission_classes = [IsTaskOwner, IsAdminUser] 
+            self.permission_classes = [IsTaskOwner, IsAdminUser, IsSuperUser] 
         else:
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
