@@ -202,7 +202,6 @@ class ProjectTests(TestCase):
         self.assertEqual(refresh_result.data, "Token is blacklisted")
 
     def test_status(self):
-
         PENDING ='PENDING'
         IN_PROGRESS ='IN_PROGRESS'
         COMPLETED ='COMPLETED'
