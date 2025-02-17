@@ -72,6 +72,12 @@ class RegisterViewSet(GenericViewSet):
             status=status.HTTP_200_OK
         )
 
+    def get_permissions(self):
+        if self.action == 'list':
+            self.permission_classes = [IsAuthenticated] 
+        return super(self.__class__, self).get_permissions()
+
+
 
 class LogoutViewSet(GenericViewSet):
     permission_classes = (IsAuthenticated,)
