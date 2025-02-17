@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'tm_api'
 ]
 
@@ -101,7 +102,15 @@ WSGI_APPLICATION = 'task_manager.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 POSTGRES_DB = os.environ.get('POSTGRES_DB', default=None)
 POSTGRES_CONN_STRING = os.environ.get('POSTGRES_CONN_STRING', default=None)
-if POSTGRES_DB:
+if POSTGRES_CONN_STRING:
+    DATABASES = {
+        'default': dj_database_url.config(
+            # Replace this value with your local database's connection string.
+            default=POSTGRES_CONN_STRING,
+            conn_max_age=600
+        )
+    }
+elif POSTGRES_DB:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -111,14 +120,6 @@ if POSTGRES_DB:
             'HOST': os.environ.get('POSTGRES_HOST', default='172.18.0.1'),
             'PORT': os.environ.get('POSTGRES_PORT', default='5432'),
         }
-    }
-elif POSTGRES_CONN_STRING:
-    DATABASES = {
-        'default': dj_database_url.config(
-            # Replace this value with your local database's connection string.
-            default=POSTGRES_CONN_STRING,
-            conn_max_age=600
-        )
     }
 else:
     DATABASES = {
