@@ -21,12 +21,20 @@ This project is a task management system built with Django and Django REST Frame
     - [StatusSerializer](#statusserializer)
     - [RegisterSerializer](#registerserializer)
     - [TaskSerializer](#taskserializer)
+- [PostgreSQL Connection](#postgresql-connection)
+    - [Using Access Credentials](#using-access-credentials)
+    - [Using Connection String](#using-connection-string)
+    - [Configuration Check](#configuration-check)
+- [CICD Configuration](#cicd-configuration)
+    - [Workflow](#workflow)
+    - [Configuration](#configuration)
 - [Default user credentials](#default-user-credentials)
     - [Default Admin/Superuser](#default-adminsuperuser)
     - [Default Staff](#default-staff)
     - [Default Generic](#default-generic)
 - [Progressive Technical Notes](#progressive-technical-notes)
     - [Install virtualenv](#install-virtualenv)
+    - [Create a project venv](#create-a-project-venv)
     - [To build the docker tm-app image](#to-build-the-docker-tm-app-image)
     - [To run the docker tm-app container](#to-run-the-docker-tm-app-container)
     - [To stop the docker tm-app container](#to-stop-the-docker-tm-app-container)
@@ -38,7 +46,7 @@ This project is a task management system built with Django and Django REST Frame
     - [Starting the PostgreSQL Container](#starting-the-postgresql-container)
     - [Starting the PostgreSQL Container on the Network "tm-network"](#starting-the-postgresql-container-on-the-network-tm-network)
     - [Stop-Start PostgreSQL Container on the Network "tm-network"](#stop-start-postgresql-container-on-the-network-tm-network)
-    - [Rebuild & restart tm-app on the Network "tm-network"](#rebuild--restart-tm-app-on-the-network-tm-network)
+    - [To rebuild & restart tm-app on the Network "tm-network"](#to-rebuild--restart-tm-app-on-the-network-tm-network)
     - [Inspecting the Network "tm-network"](#inspecting-the-network-tm-network)
 
 ## Endpoints
@@ -177,6 +185,48 @@ This project is a task management system built with Django and Django REST Frame
     - `description` (string): The description of the task.
     - `due_date` (datetime): The due date of the task.
     - `status` (integer): The ID of the status.
+
+    ## PostgreSQL Connection
+
+    To connect the Django application to a PostgreSQL database, you must provide either the connection string or the access credentials. The application is configured to check for these variables and use them accordingly.
+
+    ### Using Access Credentials
+    If you choose to use access credentials, you need to provide the following environment variables:
+    - `POSTGRES_USER`: The username for the PostgreSQL database.
+    - `POSTGRES_PASSWORD`: The password for the PostgreSQL database.
+    - `POSTGRES_HOST`: The host address of the PostgreSQL database.
+    - `POSTGRES_PORT`: The port number of the PostgreSQL database.
+
+    **Note**: Ensure that you exclude the `POSTGRES_DB` variable from the environment variables when using access credentials.
+
+    ### Using Connection String
+    Alternatively, you can provide a connection string using the `POSTGRES_CONN_STRING` environment variable. This connection string should include all necessary details to connect to the PostgreSQL database.
+
+    **Example Connection String**:
+    ```
+    POSTGRES_CONN_STRING=postgres://<username>:<password>@<host>:<port>/<database>
+    ```
+
+    ### Configuration Check
+    The application includes a check condition to determine which method to use for connecting to the PostgreSQL database. If the `POSTGRES_CONN_STRING` variable is provided, it will take precedence over the individual access credentials.
+
+    Ensure that your environment variables are set correctly to avoid connection issues.
+
+    ## CICD Configuration
+
+    The current Continuous Integration and Continuous Deployment (CICD) configuration is set up to ensure code quality and seamless deployment. The process involves running tests on the development branch and then merging the changes to the testing branch if all tests pass.
+
+    ### Workflow
+    1. **Development Branch**:
+        - Developers push their changes to the `development` branch.
+        - Automated tests are triggered to run on the `development` branch.
+        - If all tests pass, the changes are automatically merged into the `testing` branch.
+
+    2. **Testing Branch**:
+        - The `testing` branch receives the merged changes from the `development` branch.
+        - Additional integration tests can be run on the `testing` branch to ensure the stability of the application before deploying to production.
+
+    This configuration ensures that only code that passes all tests in the `development` branch is merged into the `testing` branch, maintaining the integrity and stability of the application.
 
 ## Default user credentials:
 The default credentials are generated as a step in the Dockerfile. This ensures that the application has a set of credentials to use when it is first built and run. You can find the relevant section in the Dockerfile where these credentials are created.
