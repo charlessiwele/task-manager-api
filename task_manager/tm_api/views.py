@@ -53,6 +53,7 @@ class RegisterViewSet(GenericViewSet):
             return Response(
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
         try:
             serializer = self.get_serializer(data=request.data)
             is_valid = serializer.is_valid(raise_exception=True)
@@ -74,22 +75,14 @@ class RegisterViewSet(GenericViewSet):
     """
     def list(self, request, *args, **kwargs):
         queryset = []
-        try:
-            if request.user.is_authenticated:
-                queryset = self.filter_queryset(self.get_queryset())
+
         try:
             if request.user.is_authenticated:
                 queryset = self.filter_queryset(self.get_queryset())
 
                 if not request.user.is_superuser:
                     queryset = queryset.filter(id=request.user.pk)
-                if not request.user.is_superuser:
-                    queryset = queryset.filter(id=request.user.pk)
 
-            page = self.paginate_queryset(queryset)
-            if page is not None:
-                serializer = self.get_serializer(page, many=True)
-                return self.get_paginated_response(serializer.data)
             page = self.paginate_queryset(queryset)
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
@@ -105,18 +98,6 @@ class RegisterViewSet(GenericViewSet):
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(
-                serializer.data,
-                status=status.HTTP_200_OK
-            )
-        except Exception as exception:
-            return Response(
-                str(exception),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
 
     def get_permissions(self):
         if self.action == 'list':
@@ -125,7 +106,6 @@ class RegisterViewSet(GenericViewSet):
 
 
 
-class LogoutAuthViewSet(GenericViewSet):
 class LogoutAuthViewSet(GenericViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = RegisterSerializer
@@ -249,7 +229,6 @@ class LoginTokenViewSet(GenericViewSet, TokenObtainPairView):
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
         except Exception as exception:
             return Response(
                 str(exception),
@@ -273,7 +252,6 @@ class LoginTokenRefreshViewSet(GenericViewSet,TokenRefreshView):
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
         except Exception as exception:
             return Response(
                 str(exception),
@@ -304,13 +282,6 @@ class TaskViewSet(GenericViewSet):
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-        try:
-            instance = self.get_object()
-            serializer = self.get_serializer(instance)
-            return Response(
-                serializer.data,
-                status=status.HTTP_200_OK
-            )
         except Exception as exception:
             return Response(
                 str(exception),
@@ -326,11 +297,6 @@ class TaskViewSet(GenericViewSet):
             if not request.user.is_superuser:
                 if not request.user.is_staff:
                     queryset = queryset.filter(user=request.user)
-        try:
-            queryset = self.filter_queryset(self.get_queryset())
-            if not request.user.is_superuser:
-                if not request.user.is_staff:
-                    queryset = queryset.filter(user=request.user)
 
 
             page = self.paginate_queryset(queryset)
@@ -351,11 +317,6 @@ class TaskViewSet(GenericViewSet):
             return Response(
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(
-                serializer.data,
-                status=status.HTTP_200_OK
             )
         except Exception as exception:
             return Response(
@@ -377,16 +338,6 @@ class TaskViewSet(GenericViewSet):
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-        try:
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save(request)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Exception as exception:
-            return Response(
-                str(exception),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
 
     """
     Update a model instance.
@@ -398,28 +349,11 @@ class TaskViewSet(GenericViewSet):
             serializer = self.get_serializer(instance, data=request.data, partial=partial)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-        try:
-            partial = kwargs.pop('partial', False)
-            instance = self.get_object()
-            serializer = self.get_serializer(instance, data=request.data, partial=partial)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-
-            if getattr(instance, '_prefetched_objects_cache', None):
-                # If 'prefetch_related' has been applied to a queryset, we need to
-                # forcibly invalidate the prefetch cache on the instance.
-                instance._prefetched_objects_cache = {}
             if getattr(instance, '_prefetched_objects_cache', None):
                 # If 'prefetch_related' has been applied to a queryset, we need to
                 # forcibly invalidate the prefetch cache on the instance.
                 instance._prefetched_objects_cache = {}
 
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as exception:
-            return Response(
-                str(exception),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as exception:
             return Response(
@@ -439,7 +373,6 @@ class TaskViewSet(GenericViewSet):
 class StatusViewSet(GenericViewSet):
     """
     API endpoint that allows statuses to be viewed or edited.
-    API endpoint that allows statuses to be viewed or edited.
     """
     queryset = Status.objects.all()
     serializer_class = StatusSerializer
@@ -448,15 +381,6 @@ class StatusViewSet(GenericViewSet):
     Retrieve a model instance.
     """
     def retrieve(self, request, *args, **kwargs):
-        try:
-            instance = self.get_object()
-            serializer = self.get_serializer(instance)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as exception:
-            return Response(
-                str(exception),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
         try:
             instance = self.get_object()
             serializer = self.get_serializer(instance)
@@ -477,23 +401,9 @@ class StatusViewSet(GenericViewSet):
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
                 return self.get_paginated_response(serializer.data)
-        try:
-            queryset = self.filter_queryset(self.get_queryset())
-            page = self.paginate_queryset(queryset)
-            if page is not None:
-                serializer = self.get_serializer(page, many=True)
-                return self.get_paginated_response(serializer.data)
 
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        except Exception as exception:
-            return Response(
-                str(exception),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
         except Exception as exception:
             return Response(
                 str(exception),
@@ -503,16 +413,6 @@ class StatusViewSet(GenericViewSet):
     Create a model instance.
     """
     def create(self, request, *args, **kwargs):
-        try:
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Exception as exception:
-            return Response(
-                str(exception),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
         try:
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -534,28 +434,11 @@ class StatusViewSet(GenericViewSet):
             serializer = self.get_serializer(instance, data=request.data, partial=partial)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-        try:
-            partial = kwargs.pop('partial', False)
-            instance = self.get_object()
-            serializer = self.get_serializer(instance, data=request.data, partial=partial)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
 
             if getattr(instance, '_prefetched_objects_cache', None):
                 # If 'prefetch_related' has been applied to a queryset, we need to
                 # forcibly invalidate the prefetch cache on the instance.
                 instance._prefetched_objects_cache = {}
-            if getattr(instance, '_prefetched_objects_cache', None):
-                # If 'prefetch_related' has been applied to a queryset, we need to
-                # forcibly invalidate the prefetch cache on the instance.
-                instance._prefetched_objects_cache = {}
-
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as exception:
-            return Response(
-                str(exception),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as exception:
             return Response(
