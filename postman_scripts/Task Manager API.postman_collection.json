@@ -1,0 +1,746 @@
+{
+	"info": {
+		"_postman_id": "64228a37-878e-475c-a086-ac677ca4750c",
+		"name": "Task Manager API",
+		"description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Tests\" tab**\n\nTests help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/b5f280a7-4b09-48ec-857f-0a7ed99d7ef8/U2NyZWVuc2hvdCAyMDIzLTAzLTI3IGF0IDkuNDcuMjggUE0ucG5n\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) in \"Tests\" to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26941153"
+	},
+	"item": [
+		{
+			"name": "register",
+			"item": [
+				{
+					"name": "list registered users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM5Nzk5NTIxLCJpYXQiOjE3Mzk3OTU5MjEsImp0aSI6ImIyMmJjOGExMDEwYzRmNjQ5ZGI4MGVmMWY2MWI1ZjA2IiwidXNlcl9pZCI6Nn0.HvS-AlQXxmUA74we8xYnNHyzH1hNZC_e6OUfp8Jntz8",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{tm_base_url}}/register/",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"register",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "test_account",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "test_account",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/register/",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"register",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "login_token",
+			"item": [
+				{
+					"name": "generate login token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/login_token/",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"login_token",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "refresh_login_token",
+			"item": [
+				{
+					"name": "refresh login token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "refresh",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTczOTg4MjMyMSwiaWF0IjoxNzM5Nzk1OTIxLCJqdGkiOiI2ZTYyNWVjZWM0YzI0ZWVlOGM3ODZlNTNlOWI5MWRjMyIsInVzZXJfaWQiOjZ9.FP_xHQiFAY_Ln4WTEuOlMETKD4wyn8cvKWeJzCCUJ6U",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/refresh_login_token/?refresh=",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"refresh_login_token",
+								""
+							],
+							"query": [
+								{
+									"key": "refresh",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "login_auth",
+			"item": [
+				{
+					"name": "generate login auth",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/login_auth/",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"login_auth",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list registered users using auth session",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "sessionid",
+								"value": "e58flp8327ludsh1ywhdyqhcrq164drv",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{tm_base_url}}/register/",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"register",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "logout",
+			"item": [
+				{
+					"name": "logout user using auth session",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "sessionid",
+								"value": "e58flp8327ludsh1ywhdyqhcrq164drv",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{tm_base_url}}/logout_auth/",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"logout_auth",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout user using jwt",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM5Nzk5NTIxLCJpYXQiOjE3Mzk3OTU5MjEsImp0aSI6ImIyMmJjOGExMDEwYzRmNjQ5ZGI4MGVmMWY2MWI1ZjA2IiwidXNlcl9pZCI6Nn0.HvS-AlQXxmUA74we8xYnNHyzH1hNZC_e6OUfp8Jntz8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "refresh",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTczOTg4MjMyMSwiaWF0IjoxNzM5Nzk1OTIxLCJqdGkiOiI2ZTYyNWVjZWM0YzI0ZWVlOGM3ODZlNTNlOWI5MWRjMyIsInVzZXJfaWQiOjZ9.FP_xHQiFAY_Ln4WTEuOlMETKD4wyn8cvKWeJzCCUJ6U",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/logout_token/",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"logout_token",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "status",
+			"item": [
+				{
+					"name": "create new status auth session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "sessionid",
+								"value": "e58flp8327ludsh1ywhdyqhcrq164drv",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/status/",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"status",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list statuses auth session",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "sessionid",
+								"value": "e58flp8327ludsh1ywhdyqhcrq164drv",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/status/",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"status",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create new status JWT",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM5Nzk5NTIxLCJpYXQiOjE3Mzk3OTU5MjEsImp0aSI6ImIyMmJjOGExMDEwYzRmNjQ5ZGI4MGVmMWY2MWI1ZjA2IiwidXNlcl9pZCI6Nn0.HvS-AlQXxmUA74we8xYnNHyzH1hNZC_e6OUfp8Jntz8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/status/",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"status",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list statuses JWT",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM5Nzk5NTIxLCJpYXQiOjE3Mzk3OTU5MjEsImp0aSI6ImIyMmJjOGExMDEwYzRmNjQ5ZGI4MGVmMWY2MWI1ZjA2IiwidXNlcl9pZCI6Nn0.HvS-AlQXxmUA74we8xYnNHyzH1hNZC_e6OUfp8Jntz8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/status/",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"status",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "tasks",
+			"item": [
+				{
+					"name": "create new task auth session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "sessionid",
+								"value": "e58flp8327ludsh1ywhdyqhcrq164drv",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/status/",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"status",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list statuses auth session",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "sessionid",
+								"value": "wv23flgtsk8ctsesmld63hbe3u3kduad",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/status/",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"status",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get status auth session",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "sessionid",
+								"value": "wv23flgtsk8ctsesmld63hbe3u3kduad",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/status/1",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"status",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create new status JWT",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM5Nzk5NTIxLCJpYXQiOjE3Mzk3OTU5MjEsImp0aSI6ImIyMmJjOGExMDEwYzRmNjQ5ZGI4MGVmMWY2MWI1ZjA2IiwidXNlcl9pZCI6Nn0.HvS-AlQXxmUA74we8xYnNHyzH1hNZC_e6OUfp8Jntz8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/status/?title=title 1&description=description 1&due_date=&status=1",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"status",
+								""
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "title 1"
+								},
+								{
+									"key": "description",
+									"value": "description 1"
+								},
+								{
+									"key": "due_date",
+									"value": ""
+								},
+								{
+									"key": "status",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list tasks JWT",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM5ODA1ODQ4LCJpYXQiOjE3Mzk4MDIyNDgsImp0aSI6IjhiZThmZTVjZTJmOTRkOTI4YWE2YTZiN2JiZWNlNDUxIiwidXNlcl9pZCI6MX0.s5CBWw3OaSafNaepRo68wdtbDXxI9hV3vghkC09xdvM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/tasks/",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"tasks",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get task JWT",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM5ODA1ODQ4LCJpYXQiOjE3Mzk4MDIyNDgsImp0aSI6IjhiZThmZTVjZTJmOTRkOTI4YWE2YTZiN2JiZWNlNDUxIiwidXNlcl9pZCI6MX0.s5CBWw3OaSafNaepRo68wdtbDXxI9hV3vghkC09xdvM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "IN_PROGRESS",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tm_base_url}}/tasks/1",
+							"host": [
+								"{{tm_base_url}}"
+							],
+							"path": [
+								"tasks",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "https://postman-rest-api-learner.glitch.me/"
+		}
+	]
+}
