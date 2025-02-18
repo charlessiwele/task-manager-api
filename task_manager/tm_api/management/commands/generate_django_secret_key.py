@@ -16,8 +16,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             print('Welcome to Django secret key generator')
+            logger.debug('Generating Django secret key')
             c = string.ascii_letters + string.digits + string.punctuation
             secret_key = ''.join(secrets.choice(c) for i in range(67))
             print(f'Generated Key: {secret_key}')
+            logger.debug('Django secret key generated successfully')
         except Exception as exception:
             print(exception.__str__())

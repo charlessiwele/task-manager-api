@@ -11,6 +11,8 @@ from rest_framework.permissions import BasePermission
 from django.contrib.auth import authenticate, login, logout
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.tokens import RefreshToken
+import logging
+logger = logging.getLogger(__name__)
 
 
 class IsSuperUser(BasePermission):
@@ -47,29 +49,18 @@ class RegisterViewSet(GenericViewSet):
 
     def create(self, request):
         try:
+            logger.debug('Registering user')
             serializer = self.get_serializer(data=request.data)
             is_valid = serializer.is_valid(raise_exception=True)
             if is_valid:
                 serializer.save()
+                logger.debug('User registered successfully')
                 return Response(
                     serializer.validated_data, 
                     status=status.HTTP_200_OK
                 )
         except Exception as exception:
-            return Response(
-                str(exception),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-        try:
-            serializer = self.get_serializer(data=request.data)
-            is_valid = serializer.is_valid(raise_exception=True)
-            if is_valid:
-                serializer.save()
-                return Response(
-                    serializer.validated_data, 
-                    status=status.HTTP_200_OK
-                )
-        except Exception as exception:
+            logger.debug('User registration failed ' + exception.__str__())
             return Response(
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -80,6 +71,7 @@ class RegisterViewSet(GenericViewSet):
 
         try:
             if request.user.is_authenticated:
+                logger.debug('Listing users')
                 queryset = self.filter_queryset(self.get_queryset())
 
                 if not request.user.is_superuser:
@@ -91,11 +83,13 @@ class RegisterViewSet(GenericViewSet):
                 return self.get_paginated_response(serializer.data)
 
             serializer = self.get_serializer(queryset, many=True)
+            logger.debug('Users listed successfully')
             return Response(
                 serializer.data,
                 status=status.HTTP_200_OK
             )
         except Exception as exception:
+            logger.debug('Listing users failed ' + exception.__str__())
             return Response(
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -117,8 +111,10 @@ class LogoutAuthViewSet(GenericViewSet):
     serializer_class = RegisterSerializer
     def list(self, request, *args, **kwargs):
         try:
+            logger.debug('Logging out user')
             if request.user:
                 logout(request)
+                logger.debug('User logged out successfully')
                 return Response(
                     {
                         'message': 'Successful logout',
@@ -126,6 +122,7 @@ class LogoutAuthViewSet(GenericViewSet):
                     },
                     status=status.HTTP_200_OK
                 )
+            logger.debug('No user detected to logout')
             return Response(
                 {
                     'message': 'No user detected to logout',
@@ -134,6 +131,7 @@ class LogoutAuthViewSet(GenericViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
         except Exception as exception:
+            logger.debug('User logout failed ' + exception.__str__())
             return Response(
                 str(exception),
                 status=status.HTTP_401_UNAUTHORIZED
@@ -154,6 +152,7 @@ class LogoutTokenViewSet(GenericViewSet, TokenRefreshView):
 
                 token = RefreshToken(refresh_token)
                 token.blacklist()  # Blacklist the token
+                logger.debug('User token blacklisted successfully')
 
                 return Response(
                     {
@@ -162,6 +161,7 @@ class LogoutTokenViewSet(GenericViewSet, TokenRefreshView):
                     },
                     status=status.HTTP_200_OK
                 )
+            logger.debug('No user detected to logout')
             return Response(
                 {
                     'message': 'No user detected to logout',
@@ -185,9 +185,11 @@ class LoginAuthViewSet(GenericViewSet, TokenObtainPairView):
     permission_classes = (AllowAny,)
     def create(self, request):
         try:
+            logger.debug('Authenticating user')
             user = authenticate(username=request.data.get('username'), password=request.data.get('password'))
             if user:
                 login(request, user)
+                logger.debug('User authenticated successfully')
                 return Response(
                     {
                         'session':request.session,
@@ -196,6 +198,7 @@ class LoginAuthViewSet(GenericViewSet, TokenObtainPairView):
                     status=status.HTTP_200_OK
                 )
             else:
+                logger.debug('Invalid login credentials')
                 return Response(
                     {
                         'message': 'invalid login credentials',
@@ -203,11 +206,7 @@ class LoginAuthViewSet(GenericViewSet, TokenObtainPairView):
                 status=status.HTTP_401_UNAUTHORIZED
             )
         except Exception as exception:
-            return Response(
-                str(exception),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-        except Exception as exception:
+            logger.debug('User authentication failed ' + exception.__str__())
             return Response(
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -223,14 +222,12 @@ class LoginTokenViewSet(GenericViewSet, TokenObtainPairView):
         serializer = self.get_serializer(data=request.data)
 
         try:
+            logger.debug('Generating login token')
             serializer.is_valid(raise_exception=True)
+            logger.debug('Login token generated successfully')
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         except Exception as exception:
-            return Response(
-                str(exception),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-        except Exception as exception:
+            logger.debug('Login token generation failed ' + exception.__str__())
             return Response(
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -246,14 +243,12 @@ class LoginTokenRefreshViewSet(GenericViewSet,TokenRefreshView):
         serializer = self.get_serializer(data=request.data)
 
         try:
+            logger.debug('Refreshing login token')
             serializer.is_valid(raise_exception=True)
+            logger.debug('Login token refreshed successfully')
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         except Exception as exception:
-            return Response(
-                str(exception),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-        except Exception as exception:
+            logger.debug('Login token refresh failed ' + exception.__str__())
             return Response(
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -268,18 +263,16 @@ class TaskViewSet(GenericViewSet):
     serializer_class = TaskSerializer
     def retrieve(self, request, *args, **kwargs):
         try:
+            logger.debug('Retrieving task')
             instance = self.get_object()
             serializer = self.get_serializer(instance)
+            logger.debug('Task retrieved successfully')
             return Response(
                 serializer.data,
                 status=status.HTTP_200_OK
             )
         except Exception as exception:
-            return Response(
-                str(exception),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-        except Exception as exception:
+            logger.debug('Task retrieval failed ' + exception.__str__())
             return Response(
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -287,6 +280,7 @@ class TaskViewSet(GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         try:
+            logger.debug('Listing tasks')
             queryset = self.filter_queryset(self.get_queryset())
             if not request.user.is_superuser:
                 if not request.user.is_staff:
@@ -298,21 +292,15 @@ class TaskViewSet(GenericViewSet):
                 serializer = self.get_serializer(page, many=True)
                 return self.get_paginated_response(serializer.data)
             page = self.paginate_queryset(queryset)
-            if page is not None:
-                serializer = self.get_serializer(page, many=True)
-                return self.get_paginated_response(serializer.data)
 
             serializer = self.get_serializer(queryset, many=True)
+            logger.debug('Tasks listed successfully')
             return Response(
                 serializer.data,
                 status=status.HTTP_200_OK
             )
         except Exception as exception:
-            return Response(
-                str(exception),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-        except Exception as exception:
+            logger.debug('Task listing failed ' + exception.__str__())
             return Response(
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -320,11 +308,14 @@ class TaskViewSet(GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         try:
+            logger.debug('Creating task')
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save(request)
+            logger.debug('Task created successfully')
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as exception:
+            logger.debug('Task creation failed ' + exception.__str__())
             return Response(
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -332,11 +323,13 @@ class TaskViewSet(GenericViewSet):
 
     def update(self, request, *args, **kwargs):
         try:
+            logger.debug('Updating task')
             partial = kwargs.pop('partial', False)
             instance = self.get_object()
             serializer = self.get_serializer(instance, data=request.data, partial=partial)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            logger.debug('Task updated successfully')
             if getattr(instance, '_prefetched_objects_cache', None):
                 # If 'prefetch_related' has been applied to a queryset, we need to
                 # forcibly invalidate the prefetch cache on the instance.
@@ -367,10 +360,13 @@ class StatusViewSet(GenericViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         try:
+            logger.debug('Retrieving status')
             instance = self.get_object()
             serializer = self.get_serializer(instance)
+            logger.debug('Status retrieved successfully')
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as exception:
+            logger.debug('Status retrieval failed ' + exception.__str__())
             return Response(
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -378,6 +374,7 @@ class StatusViewSet(GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         try:
+            logger.debug('Listing statuses')
             queryset = self.filter_queryset(self.get_queryset())
             page = self.paginate_queryset(queryset)
             if page is not None:
@@ -385,8 +382,10 @@ class StatusViewSet(GenericViewSet):
                 return self.get_paginated_response(serializer.data)
 
             serializer = self.get_serializer(queryset, many=True)
+            logger.debug('Statuses listed successfully')
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as exception:
+            logger.debug('Status listing failed ' + exception.__str__())
             return Response(
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -394,11 +393,14 @@ class StatusViewSet(GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         try:
+            logger.debug('Creating status')
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            logger.debug('Status created successfully')
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as exception:
+            logger.debug('Status creation failed ' + exception.__str__())
             return Response(
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -406,16 +408,19 @@ class StatusViewSet(GenericViewSet):
 
     def update(self, request, *args, **kwargs):
         try:
+            logger.debug('Updating status')
             partial = kwargs.pop('partial', False)
             instance = self.get_object()
             serializer = self.get_serializer(instance, data=request.data, partial=partial)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            logger.debug('Status updated successfully')
 
             if getattr(instance, '_prefetched_objects_cache', None):
                 # If 'prefetch_related' has been applied to a queryset, we need to
                 # forcibly invalidate the prefetch cache on the instance.
                 instance._prefetched_objects_cache = {}
+            logger.debug('Status updated successfully')
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as exception:
             return Response(
