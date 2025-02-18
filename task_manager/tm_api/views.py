@@ -15,7 +15,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 class IsSuperUser(BasePermission):
     """
-    Allows access only to admin users.
+    Allows access only to super users.
     """
 
     def has_permission(self, request, view):
@@ -23,7 +23,9 @@ class IsSuperUser(BasePermission):
 
 
 class IsTaskOwner(BasePermission): 
-
+    """
+    Allows access to a task to only the owner of a task
+    """
     def has_object_permission(self, request, view, obj):
         if request.user:
             if request.user.is_superuser:
@@ -35,6 +37,10 @@ class IsTaskOwner(BasePermission):
 
 
 class RegisterViewSet(GenericViewSet):
+    """
+    A viewset for handling user registration and listing users.
+    """
+
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
     queryset = User.objects.all()
@@ -69,10 +75,6 @@ class RegisterViewSet(GenericViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-
-    """
-    List a queryset.
-    """
     def list(self, request, *args, **kwargs):
         queryset = []
 
@@ -107,12 +109,12 @@ class RegisterViewSet(GenericViewSet):
 
 
 class LogoutAuthViewSet(GenericViewSet):
+    """
+    A viewset for handling user auth session logouts
+    """
+
     permission_classes = (IsAuthenticated,)
     serializer_class = RegisterSerializer
-
-    """
-    Retrieve a model instance.
-    """
     def list(self, request, *args, **kwargs):
         try:
             if request.user:
@@ -139,11 +141,10 @@ class LogoutAuthViewSet(GenericViewSet):
 
 
 class LogoutTokenViewSet(GenericViewSet, TokenRefreshView):
+    """
+    A viewset for handling user token  blasklisting
+    """
     permission_classes = (AllowAny,)
-
-    """
-    Retrieve a model instance.
-    """
     def create(self, request, *args, **kwargs):
         try:
             if request.user:
@@ -178,10 +179,10 @@ class LogoutTokenViewSet(GenericViewSet, TokenRefreshView):
 
 
 class LoginAuthViewSet(GenericViewSet, TokenObtainPairView):
-    permission_classes = (AllowAny,)
     """
     Login Authentication. Creates a logged-in session on the server, alternative to generating login token.
     """
+    permission_classes = (AllowAny,)
     def create(self, request):
         try:
             user = authenticate(username=request.data.get('username'), password=request.data.get('password'))
@@ -214,10 +215,10 @@ class LoginAuthViewSet(GenericViewSet, TokenObtainPairView):
 
 
 class LoginTokenViewSet(GenericViewSet, TokenObtainPairView):
+    """
+    Token Login. Creates a login token pair (access key, refresh key).
+    """
     permission_classes = (AllowAny,)
-    """
-    Request a login token generation.
-    """
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
 
@@ -237,10 +238,10 @@ class LoginTokenViewSet(GenericViewSet, TokenObtainPairView):
 
 
 class LoginTokenRefreshViewSet(GenericViewSet,TokenRefreshView):
-    permission_classes = (AllowAny,)
     """
     Request a login token refresh.
     """
+    permission_classes = (AllowAny,)
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
 
@@ -261,14 +262,10 @@ class LoginTokenRefreshViewSet(GenericViewSet,TokenRefreshView):
 
 class TaskViewSet(GenericViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoint that allows users to handle tasks.
     """
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-
-    """
-    Retrieve a model instance.
-    """
     def retrieve(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
@@ -288,9 +285,6 @@ class TaskViewSet(GenericViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-    """
-    List a queryset.
-    """
     def list(self, request, *args, **kwargs):
         try:
             queryset = self.filter_queryset(self.get_queryset())
@@ -324,9 +318,6 @@ class TaskViewSet(GenericViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-    """
-    Create a model instance.
-    """
     def create(self, request, *args, **kwargs):
         try:
             serializer = self.get_serializer(data=request.data)
@@ -339,9 +330,6 @@ class TaskViewSet(GenericViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-    """
-    Update a model instance.
-    """
     def update(self, request, *args, **kwargs):
         try:
             partial = kwargs.pop('partial', False)
@@ -377,9 +365,6 @@ class StatusViewSet(GenericViewSet):
     queryset = Status.objects.all()
     serializer_class = StatusSerializer
 
-    """
-    Retrieve a model instance.
-    """
     def retrieve(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
@@ -391,9 +376,6 @@ class StatusViewSet(GenericViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-    """
-    List a queryset.
-    """
     def list(self, request, *args, **kwargs):
         try:
             queryset = self.filter_queryset(self.get_queryset())
@@ -409,9 +391,7 @@ class StatusViewSet(GenericViewSet):
                 str(exception),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-    """
-    Create a model instance.
-    """
+
     def create(self, request, *args, **kwargs):
         try:
             serializer = self.get_serializer(data=request.data)
@@ -424,9 +404,6 @@ class StatusViewSet(GenericViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-    """
-    Update a model instance.
-    """
     def update(self, request, *args, **kwargs):
         try:
             partial = kwargs.pop('partial', False)

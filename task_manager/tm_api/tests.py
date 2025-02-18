@@ -47,20 +47,34 @@ class ProjectTests(TestCase):
         pass
 
 
-    def test_register(self):
-        result = api_client.post(
-            '/register/', 
-            {
-                'username': 'test_username',
-                'password': 'test_password',
-            }
-        )
-        self.assertEqual(result.status_code, status.HTTP_200_OK)
-        self.assertEqual(result.data.get('username'), 'test_username')
-        self.assertEqual(result.data.get('password'), 'test_password')
+        def test_register(self):
+            """
+            Test the registration endpoint.
+            """
+            # Send a POST request to the /register/ endpoint with test data
+            result = api_client.post(
+                '/register/', 
+                {
+                    'username': 'test_username',
+                    'password': 'test_password',
+                }
+            )
+            
+            # Assert that the response status code is 200 OK
+            self.assertEqual(result.status_code, status.HTTP_200_OK)
+            
+            # Assert that the response contains the correct username
+            self.assertEqual(result.data.get('username'), 'test_username')
+            
+            # Assert that the response contains the correct password
+            self.assertEqual(result.data.get('password'), 'test_password')
 
 
     def test_login_token(self):
+        """
+        Test the login token endpoint.
+        """
+        
         result = api_client.post(
             '/login_token/', 
             {
@@ -74,6 +88,9 @@ class ProjectTests(TestCase):
 
 
     def test_refresh_login_token(self):
+        """
+        Test the login token refresh endpoint.
+        """
         result = api_client.post(
             '/login_token/', 
             {
@@ -82,21 +99,29 @@ class ProjectTests(TestCase):
             }
         )
 
+        # Confirm an initial access token is generated
         self.assertEqual(result.status_code, status.HTTP_200_OK)
+
         original_access_token = result.data.get('access')
+        original_refresh_token = result.data.get('refresh')
+        self.assertTrue(original_access_token)
+        self.assertTrue(original_refresh_token)
 
         refresh_result = api_client.post(
             '/refresh_login_token/', 
             {
-                'refresh': result.data.get('refresh'),
+                'refresh': original_refresh_token,
+
             }
         )
+        # Confirm a new access token is generated
         new_access_token = refresh_result.data.get('access')
         self.assertNotEqual(new_access_token, original_access_token)
 
     def test_login_auth(self):
         api_client = APIClient()
 
+        # Login with a session
         login_auth_result = api_client.post(
             path="/login_auth/",
             data={
@@ -108,6 +133,7 @@ class ProjectTests(TestCase):
         self.assertEqual(login_auth_result.status_code, status.HTTP_200_OK)
         self.assertTrue(api_client.session.session_key)
 
+        # Add a task as a logged in user
         tasks_result = api_client.post(
             '/tasks/', 
             {
@@ -139,12 +165,15 @@ class ProjectTests(TestCase):
                 'description': 'description1', 
             },
         )
+
+        # Logout of session
         self.assertEqual(logged_in_task_create_result.status_code, status.HTTP_201_CREATED)
         logout_result = logged_in_task_create_result.client.get(
             path="/logout_auth/",
         )
         self.assertEqual(logout_result.status_code, status.HTTP_200_OK)
         logged_out_create_task_result = None
+        # Attempt to add a task when logged out
         logged_out_create_task_result = api_client.post(
             '/tasks/', 
             {
@@ -156,7 +185,7 @@ class ProjectTests(TestCase):
 
     def test_tasks(self):
         api_client = APIClient()
-
+        # Attempt to add a task when logged out
         before_log_in_create_task_result = api_client.post(
             '/tasks/', 
             {
@@ -166,6 +195,7 @@ class ProjectTests(TestCase):
         )
         self.assertEqual(before_log_in_create_task_result.status_code, status.HTTP_401_UNAUTHORIZED)
 
+        # Get login token
         login_token_result = before_log_in_create_task_result.client.post(
             '/login_token/', 
             {
@@ -174,6 +204,7 @@ class ProjectTests(TestCase):
             }
         )
         self.assertEqual(login_token_result.status_code, status.HTTP_200_OK)
+        # Attempt to add a task when logged in
         after_log_in_create_task_result = login_token_result.client.post(
             '/tasks/', 
             data={
@@ -186,12 +217,14 @@ class ProjectTests(TestCase):
         )
         self.assertEqual(after_log_in_create_task_result.status_code, status.HTTP_201_CREATED)
 
+        # Blacklist refresh token
         logout_token_result = after_log_in_create_task_result.client.post(
             '/logout_token/', 
             {
                 'refresh': login_token_result.data.get('refresh'),
             }
         )
+        # Attempt token refresh after blacklisting
         refresh_result = logout_token_result.client.post(
             '/refresh_login_token/', 
             {
