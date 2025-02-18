@@ -14,10 +14,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             print('Welcome to default generic user generator')
+            logger.debug('Generating default generic user')
             username = 'generic'
             password = 'generic'
             user_email = 'generic@generic.generic'
             generated_staff_user = generate_user(username, password, user_email)
             print(f'Generic User Generated:\n username: {generated_staff_user.username} user_email: {generated_staff_user.email}, password: {generated_staff_user.password}')
+            logger.debug('Default generic user generated successfully')
         except Exception as exception:
             print(exception.__str__())
