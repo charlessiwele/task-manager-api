@@ -242,6 +242,17 @@ password: staff
 username: generic
 password: generic
 
+## Postman Collection
+
+A Postman collection is available in the `postman_scripts` folder. This collection includes pre-configured requests for all the endpoints provided by the application. You can import this collection into Postman to easily test and interact with the API.
+
+### Importing the Collection
+1. Open Postman.
+2. Click on the `Import` button.
+3. Select the `postman_scripts` folder and choose the collection file.
+4. Click `Open` to import the collection.
+
+Once imported, you can use the requests in the collection to test the various endpoints of the application.
 
 # Progressive Technical Notes
 ## Install virtualenv: 
