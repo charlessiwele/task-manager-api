@@ -3,7 +3,10 @@ name: Run Django Tests and Merge
 on:
   push:
     branches:
-      - development
+      - testing
+  pull_request:
+    branches:
+      - testing
 
 concurrency: 
     group: testing

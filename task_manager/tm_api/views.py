@@ -66,6 +66,7 @@ class RegisterViewSet(GenericViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+
     def list(self, request, *args, **kwargs):
         queryset = []
 
