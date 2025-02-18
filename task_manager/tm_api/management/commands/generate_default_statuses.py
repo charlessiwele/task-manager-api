@@ -14,8 +14,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             print('Welcome to default statuses generator')
+            logger.debug('Generating default statuses')
             statuses = ['PENDING', 'IN_PROGRESS', 'COMPLETED']
             generate_statuses(statuses)
+            logger.debug('Generating default staff user completed successfully')
             print(f'All default statuses generated!')
         except Exception as exception:
             print(exception.__str__())

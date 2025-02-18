@@ -14,10 +14,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             print('Welcome to default superuser generator')
+            logger.debug('Generating default statuses')
             username = 'admin'
             password = 'admin'
             user_email = f'{username}@{username}.{username[:2]}'
             generated_staff_user = generate_user(username, password, user_email, is_staff = True, is_superuser=True)
+            logger.debug('Generating default superuser completed successfully')
             print(f'Superuser Generated:\n username: {generated_staff_user.username} user_email: {generated_staff_user.email}, password: {generated_staff_user.password}')
         except Exception as exception:
             print(exception.__str__())
